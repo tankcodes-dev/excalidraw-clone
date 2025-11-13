@@ -21,6 +21,9 @@ coverage
 # Vercel
 .vercel
 
+# VS Code
+.vscode/
+
 # Build Outputs
 .next/
 out/
@@ -34,6 +37,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # Misc
-.vscode
 .DS_Store
 *.pem
