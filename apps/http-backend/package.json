@@ -11,6 +11,8 @@
 	},
 	"dependencies": {
 		"@repo/typescript-config": "workspace:*",
+		"@repo/common": "workspace:*",
+		"@repo/database": "workspace:*",
 		"@types/express": "^5.0.5",
 		"@types/jsonwebtoken": "^9.0.10",
 		"argon2": "^0.44.0",

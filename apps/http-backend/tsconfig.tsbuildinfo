@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/dto/requestdto.ts","./src/middleware/auth.ts","./src/util/passwordhasher.ts"],"version":"5.9.2"}
+{"root":["./src/index.ts","./src/middleware/auth.ts","./src/util/passwordhasher.ts"],"version":"5.9.2"}

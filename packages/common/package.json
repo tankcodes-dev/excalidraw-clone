@@ -1,0 +1,19 @@
+{
+	"name": "@repo/common",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"type": "module",
+	"devDependencies": {
+		"@repo/typescript-config": "workspace:*"
+	},
+	"exports": {
+		"./schema/*": "./src/schema/*.ts"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"zod": "^4.1.12"
+	}
+}
