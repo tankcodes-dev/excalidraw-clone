@@ -1,31 +1,83 @@
 import "dotenv/config";
-import ws, { WebSocketServer } from "ws";
-import jwt from "jsonwebtoken";
+import { RawData, WebSocketServer, WebSocket } from "ws";
+import { authentication } from "./middleware/authentication.js";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import logger from "@repo/common/logger";
+import { prisma } from "@repo/database";
 
 const wss: WebSocketServer = new WebSocketServer({ port: 3002 });
 
-wss.on("connection", (socket: ws, req) => {
-	const token = req.headers.token;
+interface User {
+	room?: number[];
+	ws: WebSocket;
+	userId?: string;
+}
 
-	if (!token) {
-		socket.send("Invalid token");
-		socket.close();
-		return;
-	}
+interface UserData {
+	type: "join_room" | "leave_room" | "chat";
+	roomId?: number;
+	message?: string;
+	name?: string;
+}
 
-	try {
-		jwt.verify(token as string, process.env.JWT_SECRET as string);
-		socket.send("Validated");
-	} catch (error) {
+const users: User[] = [];
+
+wss.on("connection", (socket: WebSocket, req) => {
+	if (!authentication(req)) {
 		socket.send("Unauthorize");
 		socket.close();
 		return;
 	}
 
-	socket.on("message", (data: ws.RawData, isBinary: Boolean) => {
-		console.log(data.toString());
-		console.log(isBinary);
+	const decodedData = jwt.decode(
+		req.headers.authorization as string
+	) as JwtPayload;
+	const userId = decodedData.userId;
 
-		socket.send("Hello");
+	socket.send("Connected Successfully");
+
+	users.push({
+		userId,
+		room: [],
+		ws: socket,
 	});
+
+	try {
+		socket.on("message", async (data: RawData, isBinary: Boolean) => {
+			const dataType: UserData = JSON.parse(data.toString());
+			if (dataType.type === "join_room") {
+				const user = users.find((user) => user.ws === socket);
+				user?.room?.push(dataType.roomId as number);
+			} else if (dataType.type === "leave_room") {
+				const user = users.find((user) => user.ws === socket);
+				if (user)
+					user.room = user?.room?.filter(
+						(roomId) => roomId !== dataType.roomId
+					);
+			} else if (dataType.type === "chat") {
+				try {
+					await prisma.chat.create({
+						data: {
+							message: dataType.message as string,
+							roomId: dataType.roomId as number,
+							userId: userId,
+						},
+					});
+				} catch (error) {
+					logger.error("Database save failed.")
+				}
+				users.forEach((user) => {
+					if (user.room?.includes(dataType.roomId as number))
+						user.ws.send(
+							JSON.stringify({
+								name: dataType.name,
+								msg: dataType.message as string,
+							})
+						);
+				});
+			}
+		});
+	} catch (error) {
+		logger.error(`WS Server error: ${error}`);
+	}
 });
