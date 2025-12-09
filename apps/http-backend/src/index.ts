@@ -10,10 +10,11 @@ import { hashPassword, verifyPassword } from "./util/passwordHasher.js";
 import z, { flattenError, ZodSafeParseResult } from "zod";
 import { prisma } from "@repo/database";
 import logger from "@repo/common/logger";
+import cors from "cors"
 
 const app: Application = express();
 
-app.use(express.json());
+app.use(express.json(), cors({origin: ["http://localhost:3000"]}));
 
 app.get("/ping", (req: Request, res: Response) => {
 	res.send("pong");

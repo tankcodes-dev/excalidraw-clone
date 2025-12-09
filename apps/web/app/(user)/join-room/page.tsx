@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import SignupImage1 from "../../resources/signup-image-1.png";
+import JoinRoomImage1 from "../../resources/join-room-image-1.png";
 import { InputBox } from "@repo/ui/input";
 import { SignupRequest } from "@repo/common/schema/signupRequestSchema";
 import axios from "axios";
@@ -10,19 +10,16 @@ import { useRouter } from "next/navigation";
 const defaultInputBoxStyle =
 	"bg-white px-4 py-3 mb-4 rounded-2xl shadow-md w-full";
 
-export default function Signup() {
-	const fullNameRef = useRef<HTMLInputElement | null>(null);
-	const emailRef = useRef<HTMLInputElement | null>(null);
-	const passwordRef = useRef<HTMLInputElement | null>(null);
-	const confirmPasswordRef = useRef<HTMLInputElement | null>(null);
+export default function JoinRoom() {
+	const roomIdRef = useRef<HTMLInputElement | null>(null);
+	const nicknameRef = useRef<HTMLInputElement | null>(null);
 	const router = useRouter();
 
-	async function userSignup() {
+	async function joinRoom() {
 		//check valid inputs
 		const inputRequest = {
-			name: fullNameRef.current?.value,
-			email: emailRef.current?.value,
-			password: passwordRef.current?.value,
+			roomId: roomIdRef.current?.value,
+			name: nicknameRef.current?.value,
 		};
 		const validateInputRequest = SignupRequest.safeParse(inputRequest);
 
@@ -36,51 +33,40 @@ export default function Signup() {
 		);
 
 		if (response.status === 200) {
-			router.push("/signin");
+			router.push("/chat");
 		}
 	}
 	return (
 		<div className="flex flex-col text-gray-950 justify-center items-center p-4 max-w-[500px] sm:w-2xs">
-			<h1 className="font-bold text-2xl">Create Your Account</h1>
 			<img
-				src={SignupImage1.src}
+				src={JoinRoomImage1.src}
 				className="sm:w-[200px] max-w-[350px]"
 			/>
+			<h1 className="font-bold text-2xl">Join a Room</h1>
+			<p className="mb-10">Enter the Room Id and chat!</p>
 			<InputBox
-				ref={fullNameRef}
+				ref={roomIdRef}
 				type="text"
-				placeholder="Fullname"
+				placeholder="Room Id"
 				className={`${defaultInputBoxStyle}`}
 			/>
 			<InputBox
-				ref={emailRef}
+				ref={nicknameRef}
 				type="email"
-				placeholder="Email"
-				className={`${defaultInputBoxStyle}`}
-			/>
-			<InputBox
-				ref={passwordRef}
-				type="password"
-				placeholder="Password"
-				className={`${defaultInputBoxStyle}`}
-			/>
-			<InputBox
-				ref={confirmPasswordRef}
-				type="password"
-				placeholder="Confirm Password"
+				placeholder="Nickname (optional)"
 				className={`${defaultInputBoxStyle}`}
 			/>
 			<button
 				type="submit"
 				className="bg-linear-to-r from-[#2b83f6] to-[#36a9f6] text-white font-medium rounded-2xl w-full px-4 py-2 hover:cursor-pointer hover:bg-linear-to-r hover:from-[#36a9f6] hover:to-[#2b83f6]"
-				onClick={userSignup}
+				onClick={joinRoom}
 			>
-				Sign Up
+				Join Room
 			</button>
 			<p>
-				Already have an account?{" "}
+				Or create a new{" "}
 				<u>
-					<a href="/signin">Log in</a>
+					<a href="/create-room">room</a>
 				</u>
 			</p>
 		</div>
