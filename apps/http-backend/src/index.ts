@@ -1,6 +1,6 @@
 import "dotenv/config";
 import express, { Application, Request, Response } from "express";
-import jwt, { sign } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { authentication } from "./middleware/auth.js";
 import {
 	SignupRequest,
