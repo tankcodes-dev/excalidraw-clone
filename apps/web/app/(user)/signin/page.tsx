@@ -29,14 +29,15 @@ export default function Signin() {
 			return;
 		}
 
-		const response = await axios.post(
-			process.env.NEXT_PUBLIC_SIGNIN_URL as string,
-			userInput
-		);
-
-		if (response.status === 200) {
+		try {
+			const response = await axios.post(
+				process.env.NEXT_PUBLIC_SIGNIN_URL as string,
+				userInput
+			);
 			localStorage.setItem("token", response.data.token);
 			router.push("/join-room");
+		} catch (error: any) {
+			alert(error.response.data.msg);
 		}
 	}
 

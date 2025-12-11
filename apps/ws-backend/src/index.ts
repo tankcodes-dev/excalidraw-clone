@@ -23,15 +23,18 @@ interface UserData {
 const users: User[] = [];
 
 wss.on("connection", (socket: WebSocket, req) => {
+	
 	if (!authentication(req)) {
 		socket.send("Unauthorize");
 		socket.close();
 		return;
 	}
 
-	const decodedData = jwt.decode(
-		req.headers.authorization as string
-	) as JwtPayload;
+	const url = new URL((process.env.WS_URL as string) + req.url);
+	const urlParams = new URLSearchParams(url.search);
+	const authorizationToken = urlParams.get("authorization");
+
+	const decodedData = jwt.decode(authorizationToken as string) as JwtPayload;
 	const userId = decodedData.userId;
 
 	socket.send("Connected Successfully");
@@ -64,7 +67,7 @@ wss.on("connection", (socket: WebSocket, req) => {
 						},
 					});
 				} catch (error) {
-					logger.error("Database save failed.")
+					logger.error("Database save failed.");
 				}
 				users.forEach((user) => {
 					if (user.room?.includes(dataType.roomId as number))

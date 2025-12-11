@@ -7,7 +7,7 @@ export default function AuthRoot({
 }>) {
 	return (
 		<div
-			className={`flex flex-col text-gray-950 justify-center items-center h-screen object-cover bg-size-[100%_100%] bg-center bg-no-repeat`}
+			className={`flex flex-col text-gray-950 justify-center items-center h-screen object-cover bg-size-[100%_100%] bg-center bg-no-repeat relative`}
 			style={{ backgroundImage: `url(${authBackgroungImg.src})` }}
 		>
 			{children}

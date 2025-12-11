@@ -10,11 +10,11 @@ import { hashPassword, verifyPassword } from "./util/passwordHasher.js";
 import z, { flattenError, ZodSafeParseResult } from "zod";
 import { prisma } from "@repo/database";
 import logger from "@repo/common/logger";
-import cors from "cors"
+import cors from "cors";
 
 const app: Application = express();
 
-app.use(express.json(), cors({origin: ["http://localhost:3000"]}));
+app.use(express.json(), cors({ origin: ["http://localhost:3000"] }));
 
 app.get("/ping", (req: Request, res: Response) => {
 	res.send("pong");
@@ -128,31 +128,45 @@ app.post(
 	}
 );
 
-app.get(
-	"/chats/:roomId",
-	authentication,
-	async (req: Request, res: Response) => {
-		try {
-			const messages = await prisma.chat.findMany({
-				where: {
-					roomId: Number(req.params.roomId),
-				},
-				orderBy: {
-					id: "desc",
-				},
-				take: 50,
-			});
-			res.json({
-				messages,
-			});
-		} catch (error) {
-			logger.error("Database fetched failed.");
-			res.status(401).json({
-				error,
-			});
-		}
+app.get("/chats/:roomId", async (req: Request, res: Response) => {
+	try {
+		const messages = await prisma.chat.findMany({
+			where: {
+				roomId: Number(req.params.roomId),
+			},
+			orderBy: {
+				id: "desc",
+			},
+			take: 50,
+		});
+		res.json({
+			messages,
+		});
+	} catch (error) {
+		logger.error("Database fetched failed.");
+		res.status(401).json({
+			error,
+		});
 	}
-);
+});
+
+app.get("/room/:slug", async (req: Request, res: Response) => {
+	const slug = req.params.slug;
+	try {
+		const room = await prisma.room.findFirst({
+			where: {
+				slug: slug,
+			},
+		});
+		res.json({
+			roomId: room?.id,
+		});
+	} catch (error) {
+		res.status(401).json({
+			error,
+		});
+	}
+});
 
 app.listen(3001, (err) => {
 	console.log("Server started at http://localhost:3001");

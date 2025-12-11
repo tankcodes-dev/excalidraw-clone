@@ -15,60 +15,54 @@ export default function JoinRoom() {
 	const nicknameRef = useRef<HTMLInputElement | null>(null);
 	const router = useRouter();
 
-	async function joinRoom() {
-		//check valid inputs
-		const inputRequest = {
-			roomId: roomIdRef.current?.value,
-			name: nicknameRef.current?.value,
-		};
-		const validateInputRequest = SignupRequest.safeParse(inputRequest);
-
-		if (validateInputRequest.error) {
-			console.log(validateInputRequest.error);
-			return;
-		}
-		const response = await axios.post(
-			process.env.NEXT_PUBLIC_SIGNUP_URL as string,
-			inputRequest
-		);
-
-		if (response.status === 200) {
-			router.push("/chat");
-		}
-	}
 	return (
-		<div className="flex flex-col text-gray-950 justify-center items-center p-4 max-w-[500px] sm:w-2xs">
-			<img
-				src={JoinRoomImage1.src}
-				className="sm:w-[200px] max-w-[350px]"
-			/>
-			<h1 className="font-bold text-2xl">Join a Room</h1>
-			<p className="mb-10">Enter the Room Id and chat!</p>
-			<InputBox
-				ref={roomIdRef}
-				type="text"
-				placeholder="Room Id"
-				className={`${defaultInputBoxStyle}`}
-			/>
-			<InputBox
-				ref={nicknameRef}
-				type="email"
-				placeholder="Nickname (optional)"
-				className={`${defaultInputBoxStyle}`}
-			/>
-			<button
-				type="submit"
-				className="bg-linear-to-r from-[#2b83f6] to-[#36a9f6] text-white font-medium rounded-2xl w-full px-4 py-2 hover:cursor-pointer hover:bg-linear-to-r hover:from-[#36a9f6] hover:to-[#2b83f6]"
-				onClick={joinRoom}
-			>
-				Join Room
-			</button>
-			<p>
-				Or create a new{" "}
-				<u>
-					<a href="/create-room">room</a>
-				</u>
-			</p>
-		</div>
+		<>
+			<div className="flex flex-col text-gray-950 justify-center items-center p-4 max-w-[500px] sm:w-2xs">
+				<img
+					src={JoinRoomImage1.src}
+					className="sm:w-[200px] max-w-[350px]"
+				/>
+				<h1 className="font-bold text-2xl">Join a Room</h1>
+				<p className="mb-10">Enter the Room Id and chat!</p>
+				<InputBox
+					ref={roomIdRef}
+					type="text"
+					placeholder="Room Id"
+					className={`${defaultInputBoxStyle}`}
+				/>
+				<InputBox
+					ref={nicknameRef}
+					type="email"
+					placeholder="Nickname (optional)"
+					className={`${defaultInputBoxStyle}`}
+				/>
+				<button
+					type="submit"
+					className="bg-linear-to-r from-[#2b83f6] to-[#36a9f6] text-white font-medium rounded-2xl w-full px-4 py-2 hover:cursor-pointer hover:bg-linear-to-r hover:from-[#36a9f6] hover:to-[#2b83f6]"
+					onClick={(e) => {
+						router.push(`/room/${roomIdRef.current?.value}`);
+					}}
+				>
+					Join Room
+				</button>
+				<p>
+					Or create a new{" "}
+					<u>
+						<a href="/room/create-room">room</a>
+					</u>
+				</p>
+			</div>
+			<div className="absolute z-5 right-4 top-4">
+				<button
+					className="bg-linear-to-r from-[#2b83f6] to-[#36a9f6] text-white font-medium rounded-2xl w-full px-4 py-2 hover:cursor-pointer hover:bg-linear-to-r hover:from-[#36a9f6] hover:to-[#2b83f6]"
+					onClick={() => {
+						localStorage.removeItem("token");
+						router.push("/signin");
+					}}
+				>
+					Logout
+				</button>
+			</div>
+		</>
 	);
 }
